@@ -1,5 +1,6 @@
 package com.company;
 
+import com.sun.org.apache.xpath.internal.operations.Mod;
 import spark.ModelAndView;
 import spark.Session;
 import spark.Spark;
@@ -10,6 +11,7 @@ import java.io.FileNotFoundException;
 import java.util.*;
 
 public class Main implements List {
+    public static final int PAGE = 20;
 
     public static void main(String[] args) throws FileNotFoundException {
         ArrayList<Person> people = parseTxt("people.txt");
@@ -17,20 +19,14 @@ public class Main implements List {
         Spark.get(
                 "/",
                 (request,response) -> {
-                    String id = request.queryParams("id");
-                    HashMap m = new HashMap();
-                    for (Person person : people) {
-                        int firstPersonId = 0;
-                        int lastPersonId = 19;
-                        List<Person> offList = people.subList(firstPersonId,lastPersonId);
-                        m.put("offList",offList);
-                        m.put("firstName",person.firstName);
-                        m.put("lastName",person.lastName);
-                        if (id != null ) {
-                            person.id = Integer.valueOf(id);
-                            m.put("idNum", person.id);
-                        }
+                    int offSetNum = 0;
+                    String offSetString = request.queryParams("offset");
+                    if (offSetString != null) {
+                        offSetNum = Integer.valueOf(offSetString);
                     }
+                    HashMap m = new HashMap();
+                    List<Person> offSet = people.subList(offSetNum,offSetNum+PAGE);
+                    m.put("offSet",offSet);
                     return new ModelAndView(m,"home.html");
                 },
                 new MustacheTemplateEngine()
@@ -39,8 +35,11 @@ public class Main implements List {
         Spark.get(
                 "/person",
                 (request,response) -> {
-                    return null;
-                }
+                    int id = Integer.valueOf(request.queryParams("id"));
+                    Person p = people.get(id-1);
+                    return new ModelAndView(p,"person.html");
+                },
+                new MustacheTemplateEngine()
         );
     }
 
