@@ -11,6 +11,7 @@ import java.io.FileNotFoundException;
 import java.util.*;
 
 public class Main{
+    //This was a nice hint from rebekah
     public static final int PAGE = 20;
 
     public static void main(String[] args) throws FileNotFoundException {
@@ -49,6 +50,7 @@ public class Main{
         );
     }
 
+    //reused this from my earlier people project!
     public static ArrayList<Person> parseTxt(String fileName) throws FileNotFoundException {
         ArrayList<Person> p = new ArrayList<>();
         File f = new File(fileName);
