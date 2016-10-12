@@ -10,41 +10,45 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.*;
 
-public class Main implements List {
+public class Main{
     public static final int PAGE = 20;
+    public static ArrayList<Person> people = new ArrayList<>();
 
     public static void main(String[] args) throws FileNotFoundException {
-        ArrayList<Person> people = parseTxt("people.txt");
-
+        parseTxt("people.txt");
         Spark.get(
                 "/",
-                (request,response) -> {
+                (request, response) -> {
                     int offSetNum = 0;
                     String offSetString = request.queryParams("offset");
                     if (offSetString != null) {
                         offSetNum = Integer.valueOf(offSetString);
                     }
                     HashMap m = new HashMap();
-                    List<Person> offSet = people.subList(offSetNum,offSetNum+PAGE);
-                    m.put("offSet",offSet);
-                    return new ModelAndView(m,"home.html");
+                    ArrayList<Person> offSet = new ArrayList<>(people.subList(offSetNum, offSetNum + PAGE));
+                    m.put("offSetPrevious", offSetNum - PAGE);
+                    m.put("offSetNext", offSetNum + PAGE);
+                    m.put("Previous", offSetNum > 0);
+                    m.put("Next", offSetNum + PAGE < people.size());
+                    m.put("offSet", offSet);
+
+                    return new ModelAndView(m, "home.html");
                 },
                 new MustacheTemplateEngine()
         );
 
         Spark.get(
                 "/person",
-                (request,response) -> {
-                    int id = Integer.valueOf(request.queryParams("id"));
-                    Person p = people.get(id-1);
-                    return new ModelAndView(p,"person.html");
+                (request, response) -> {
+                    int id = Integer.valueOf(request.queryParams("id"))-1;
+                    Person p = people.get(id);
+                    return new ModelAndView(p, "person.html");
                 },
                 new MustacheTemplateEngine()
         );
     }
 
-    public static ArrayList<Person> parseTxt (String fileName) throws FileNotFoundException {
-        ArrayList<Person> p = new ArrayList<>();
+    public static ArrayList<Person> parseTxt(String fileName) throws FileNotFoundException {
         File f = new File(fileName);
         Scanner fileScanner = new Scanner(f);
         fileScanner.nextLine();
@@ -58,123 +62,8 @@ public class Main implements List {
             String country = columns[4];
             String ip = columns[5];
             Person person = new Person(Integer.valueOf(id), firstName, lastName, email, country, ip);
-            p.add(person);
+            people.add(person);
         }
-        return p;
-    }
-
-    @Override
-    public int size() {
-        return 0;
-    }
-
-    @Override
-    public boolean isEmpty() {
-        return false;
-    }
-
-    @Override
-    public boolean contains(Object o) {
-        return false;
-    }
-
-    @Override
-    public Iterator iterator() {
-        return null;
-    }
-
-    @Override
-    public Object[] toArray() {
-        return new Object[0];
-    }
-
-    @Override
-    public boolean add(Object o) {
-        return false;
-    }
-
-    @Override
-    public boolean remove(Object o) {
-        return false;
-    }
-
-    @Override
-    public boolean addAll(Collection c) {
-        return false;
-    }
-
-    @Override
-    public boolean addAll(int index, Collection c) {
-        return false;
-    }
-
-    @Override
-    public void clear() {
-
-    }
-
-    @Override
-    public Object get(int index) {
-        return null;
-    }
-
-    @Override
-    public Object set(int index, Object element) {
-        return null;
-    }
-
-    @Override
-    public void add(int index, Object element) {
-
-    }
-
-    @Override
-    public Object remove(int index) {
-        return null;
-    }
-
-    @Override
-    public int indexOf(Object o) {
-        return 0;
-    }
-
-    @Override
-    public int lastIndexOf(Object o) {
-        return 0;
-    }
-
-    @Override
-    public ListIterator listIterator() {
-        return null;
-    }
-
-    @Override
-    public ListIterator listIterator(int index) {
-        return null;
-    }
-
-    @Override
-    public List subList(int fromIndex, int toIndex) {
-        return null;
-    }
-
-    @Override
-    public boolean retainAll(Collection c) {
-        return false;
-    }
-
-    @Override
-    public boolean removeAll(Collection c) {
-        return false;
-    }
-
-    @Override
-    public boolean containsAll(Collection c) {
-        return false;
-    }
-
-    @Override
-    public Object[] toArray(Object[] a) {
-        return new Object[0];
+        return people;
     }
 }

@@ -1,10 +1,13 @@
 <html>
 <body>
-
 {{#offSet}}
-<a href="/?idNum={{id}}"> {{firstName}} &nbsp; {{lastName}} </a><br>
+<a href="/person?id={{id}}"> {{firstName}} &nbsp; {{lastName}} </a><br>
 {{/offSet}}
-<a href="/?offList={{id}}">Previous</a>
-<a href="/?offList={{id}}">Next</a>
+{{#Previous}}
+<a href="/?offset={{offSetPrevious}}">Previous</a>
+{{/Previous}}
+{{#Next}}
+<a href="/?offset={{offSetNext}}">Next</a>
+{{/Next}}
 </body>
 </html>
