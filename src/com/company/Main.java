@@ -19,12 +19,11 @@ public class Main implements List {
                 (request,response) -> {
                     String id = request.queryParams("id");
                     HashMap m = new HashMap();
-                    m.put("people",people);
-                    int firstPersonId = 0;
-                    int lastPersonId = 20;
-//                    for (int i > 0; )
-//                    List<Person> subList = people.subList()
                     for (Person person : people) {
+                        int firstPersonId = 0;
+                        int lastPersonId = 19;
+                        List<Person> offList = people.subList(firstPersonId,lastPersonId);
+                        m.put("offList",offList);
                         m.put("firstName",person.firstName);
                         m.put("lastName",person.lastName);
                         if (id != null ) {
