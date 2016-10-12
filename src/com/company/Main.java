@@ -12,10 +12,9 @@ import java.util.*;
 
 public class Main{
     public static final int PAGE = 20;
-    public static ArrayList<Person> people = new ArrayList<>();
 
     public static void main(String[] args) throws FileNotFoundException {
-        parseTxt("people.txt");
+        ArrayList<Person> people = parseTxt("people.txt");
         Spark.get(
                 "/",
                 (request, response) -> {
@@ -25,10 +24,12 @@ public class Main{
                         offSetNum = Integer.valueOf(offSetString);
                     }
                     HashMap m = new HashMap();
+                    //Had List<E> before but that was a pain
                     ArrayList<Person> offSet = new ArrayList<>(people.subList(offSetNum, offSetNum + PAGE));
                     m.put("offSetPrevious", offSetNum - PAGE);
                     m.put("offSetNext", offSetNum + PAGE);
                     m.put("Previous", offSetNum > 0);
+                    //has be smaller than arraylist not the offlist
                     m.put("Next", offSetNum + PAGE < people.size());
                     m.put("offSet", offSet);
 
@@ -49,6 +50,7 @@ public class Main{
     }
 
     public static ArrayList<Person> parseTxt(String fileName) throws FileNotFoundException {
+        ArrayList<Person> p = new ArrayList<>();
         File f = new File(fileName);
         Scanner fileScanner = new Scanner(f);
         fileScanner.nextLine();
@@ -62,8 +64,8 @@ public class Main{
             String country = columns[4];
             String ip = columns[5];
             Person person = new Person(Integer.valueOf(id), firstName, lastName, email, country, ip);
-            people.add(person);
+            p.add(person);
         }
-        return people;
+        return p;
     }
 }
